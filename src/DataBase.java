@@ -9,15 +9,19 @@ public class DataBase {
         db = new ArrayList<Path>();
     }
     
-    public void addNewPath(Path p) {
+    public void addPath(Path p) {
         db.add(p);
+    }
+    
+    public Path getPath(int i) {
+        return db.get(i);
     }
     
     public String toString() {
         StringBuilder builder = new StringBuilder();
         for (Path p : db) {
             builder.append(p.toString());
-            builder.append('\n');
+            builder.append("\n");
         }
         builder.deleteCharAt(builder.length() - 1); // delete last new line character 
         

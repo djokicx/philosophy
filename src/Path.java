@@ -1,6 +1,7 @@
 import java.util.LinkedList;
 
 public class Path {
+    // since single-threaded simple increment will work for Unique IDs
     private static int idCounter = 0; // 2^31 ids
     private static final String phil = "Philosophy";
     private int ID;
@@ -27,12 +28,12 @@ public class Path {
     public String toString() {
         StringBuilder builder = new StringBuilder();
         
-        builder.append(ID);
-        builder.append('\n');
+        builder.append("PATH ID: " + ID + "\n");
+        builder.append("Number of articles viewed (including the initial one): " + list.size() + "\n");
         
         for (String elem : list) {
             builder.append(elem);
-            builder.append('\n');
+            builder.append("\n");
         }
         builder.deleteCharAt(builder.length() - 1); // delete last new line character 
         return builder.toString();

@@ -1,34 +1,41 @@
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.net.URL;
-
-
 public class ToPhilosophy {
-    public static void main(String[] args) throws URISyntaxException {
-        DataBase db = new DataBase();
-        String url = "https://en.wikipedia.org/wiki/Austria_national_football_team";
+    DataBase db;
+    
+    public ToPhilosophy() {
+        db = new DataBase();
+    }
+    
+    public boolean reachPhilosophyVia(String url) {
         boolean flag = false;
         
         Path path = new Path();
-        while(!flag) {
-            path.add(URLParser.articleTitle(url));
+        while (!flag) {
+            path.add(URLParser.articleTitle(url)); // add the link title to the path
+            
+            if (path.length() > 50) {
+                System.out.println("Way too many attempts, aborting...");
+                return false;
+            }
+            
             if (Path.isPhilosophy(URLParser.articleTitle(url))) { // check before in case it starts at Philosophy
-                System.out.println("Philosophy found!");
+//                System.out.println("Philosophy found!");
                 System.out.println(path.toString());
-                break;
+                db.addPath(path);
+                return true;
             }
             
             url = URLParser.fetchHTML(url);
             if (path.isLoop(URLParser.articleTitle(url))) {
                 System.out.println(path.toString());
-                System.err.println("Loop detected");
-                break; // check if it's loop before adding it to the path  
+                System.out.println("Loop detected");
+                return false; // check if it's loop before adding it to the path  
             }
         }
         
-        
-        
-        
-        
+        return false; // default
+    }
+    
+    public String getPath(int id) {
+        return db.getPath(id).toString();
     }
 }

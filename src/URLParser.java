@@ -13,61 +13,37 @@ import java.util.regex.Pattern;
 
 public class URLParser {
     
-    private static final Pattern PAREN =
-            Pattern.compile("\\([^)]*\\)", Pattern.CASE_INSENSITIVE|Pattern.DOTALL);
-    private static final Pattern LINK =
-            Pattern.compile("href=\"(.*?)\" ", Pattern.CASE_INSENSITIVE|Pattern.DOTALL);
-    private static final String HOST = "https://en.wikipedia.org";
-   
+    private static final String HOST = "https://en.wikipedia.org/";  
     private static final Pattern REGEX = Pattern.compile("(\\([^)]*\\))|href=\"/(.*?)\" ", Pattern.CASE_INSENSITIVE|Pattern.DOTALL);
      
     
     public static String fetchHTML(String path) {
         
         try {
-            URL first = new URL(path);
+            URL first = new URL(path);            
+            URLConnection conn = first.openConnection(); // connection
             
-            URLConnection conn = first.openConnection();
-            
-            if (validContentTypeHeader(conn.getContentType())) {
+            if (validContentTypeHeader(conn.getContentType())) { // if valid, start reading
             
                 BufferedReader in = new BufferedReader(
                 new InputStreamReader(first.openStream()));
                 
                 String inputLine;
-                
-                
+                  
                 while ((inputLine = in.readLine()) != null)
-                           if(inputLine.contains("<p>")) { // first paragraph in the html
+                           if (inputLine.contains("<p>")) { // first paragraph in the html
                                Matcher matcher = REGEX.matcher(inputLine);
-                               while(matcher.find()) {
-                                   if(matcher.group(2) != null){
-                                       System.out.println(matcher.group(2));
+                               while (matcher.find()) {
+                                   if (matcher.group(2) != null){
                                        URI u = new URI(matcher.group(2));
                                        String result = isWiki(u);
-                                       System.out.println(result);
-                                       if (result != "") {
-                                           System.out.println("In here");
+                                       
+                                       if (result != "" && !articleTitle(result).equals(articleTitle(path))) { // valid Wiki link and not a link to the current page
                                          in.close();
                                          return result;
                                        }
                                    }
                                }
-//                               Matcher matcher = PAREN.matcher(inputLine);
-//                               
-//                               matcher = LINK.matcher(matcher.replaceFirst("")); // remove everything found in the first parens (word etimology) && update matcher for LINK 
-//                               
-//                               
-//                               while (matcher.find()) {
-//                                   String next = matcher.group(1);
-//                                   URI u = new URI(next);
-//                                   String result = isWiki(u);
-//                                   if (result != "") {
-//                                       in.close();
-//                                       return result;
-//                                   }
-//                                   
-//                               }
                            }
                 in.close();
             }
@@ -75,13 +51,11 @@ public class URLParser {
             System.err.println("Malformed URL: " + path + " " + e);
         } catch (IOException e) {
             System.err.println("IOException: " + path + " " + e);
-
         } catch (URISyntaxException e) {
             System.err.println("URISyntaxException: " + e);
         }
     
-        return "";
-        
+        return "";  
     }
     
     private static boolean validContentTypeHeader(String headerValue) {
@@ -107,13 +81,13 @@ public class URLParser {
     }
     
     private static String isWiki(URI uri) {
-        if(uri.isAbsolute()) {
+        if (uri.isAbsolute()) {
             if (uri.getHost().contains("wikipedia")) {
                 return uri.toString();
             }
         }
         else {
-            if(uri.toString().startsWith("/wiki")) {
+            if (uri.toString().startsWith("wiki")) {
                 return HOST.concat(uri.toString());
             }
         }
