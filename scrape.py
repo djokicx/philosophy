@@ -1,3 +1,7 @@
+# using simple wiki api to scrape for testing
+# returns random 10 wiki urls
+# python scrape.py > tests.txt
+
 import wikipedia as w
 
 pages = []
